@@ -21,21 +21,25 @@ class KnowledgeRepository:
 
     def __init__(self, vector_store: Optional[VectorStore] = None):
         self.embedding_service = EmbeddingService()
-        self.vector_store = vector_store
+        
+        # Default to the persistent FaissStore if no store is provided
+        if vector_store is None:
+            from backend.datastore.vector_store.faiss_store import FaissStore
+            self.vector_store = FaissStore()
+        else:
+            self.vector_store = vector_store
 
         # Ensure vector store folder exists (used by the internal index path)
         self.store_path = "datastore/vector_store"
         os.makedirs(self.store_path, exist_ok=True)
 
-        if self.vector_store is None:
-            # Internal FAISS fallback (768 dims)
-            self.index = faiss.IndexFlatL2(768)
-            self.metadata = []
+        # We no longer rely on internal FAISS index as primary, but keep it for fallback if needed
+        # or just rely entirely on vector_store which is now always present.
+        self.index = None 
+        self.metadata = []
 
     async def add_document(self, text: str, doc_id: str):
-        """Embed and store text chunks either in the injected vector store
-        or in the internal FAISS index.
-        """
+        """Embed and store text chunks in the vector store."""
         logger.info(f"Adding document chunk for doc_id: {doc_id}")
         embedding = await self.embedding_service.embed_text(text)
 
@@ -53,54 +57,39 @@ class KnowledgeRepository:
                 # Fallback to any async variant
                 try:
                     import asyncio
-
                     asyncio.get_event_loop().run_until_complete(self.vector_store.add_documents([doc]))
                 except Exception:
                     logger.exception("Failed to add document to vector_store")
-        else:
-            vec = np.array([embedding], dtype="float32")
-            self.index.add(vec)
-            self.metadata.append({"doc_id": doc_id, "text": text})
-
+        
         logger.info(f"Successfully added document chunk for doc_id: {doc_id}")
 
     async def search(self, query: str, top_k: int = 5):
-        """Return nearest matches either from injected vector_store or internal index."""
+        """Return nearest matches from vector_store."""
         logger.info(f"Searching for query: '{query}' with top_k={top_k}")
         query_vec = await self.embedding_service.embed_text(query)
 
         if self.vector_store is not None:
-            # delegate to the vector store. Ensure we pass an embedding
             try:
                 return self.vector_store.search(query_vec, k=top_k)
             except Exception:
-                # try async search helper if provided
                 try:
                     import asyncio
-
                     return asyncio.get_event_loop().run_until_complete(self.vector_store.search_async(query_vec, k=top_k))
                 except Exception:
                     logger.exception("Vector store search failed")
                     return []
-
-        query_vec = np.array([query_vec], dtype="float32")
-        distances, indices = self.index.search(query_vec, top_k)
-
-        results = []
-        for idx in indices[0]:
-            if idx < len(self.metadata):
-                results.append(self.metadata[idx])
-
-        logger.info(f"Found {len(results)} results for query: '{query}'")
-        return results
+        return []
 
     def get_document_text(self, doc_id: str) -> str:
         """Retrieve text for a specific document ID."""
-        # Check internal metadata
+        if self.vector_store and hasattr(self.vector_store, "get_document_by_id"):
+            doc = self.vector_store.get_document_by_id(doc_id)
+            if doc:
+                return doc.get("text", "")
+        
+        # Fallback to internal metadata if used (legacy)
         for item in self.metadata:
             if item.get("doc_id") == doc_id:
                 return item.get("text", "")
         
-        # If using external vector store, it might not support direct retrieval by ID easily
-        # without a specific method. For now, we rely on internal metadata or return empty.
         return ""

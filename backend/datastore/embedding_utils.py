@@ -32,7 +32,7 @@ class EmbeddingService:
         # Use a standard dimension to maintain consistency
         self.default_dim = 768
 
-    def embed_text(self, text: str) -> np.ndarray:
+    async def embed_text(self, text: str) -> np.ndarray:
         """
         Embed a single piece of text.
 
@@ -45,6 +45,9 @@ class EmbeddingService:
 
         if self.engine_ready:
             try:
+                # Note: genai.embed_content is synchronous, but we wrap it in async def
+                # to satisfy the interface expected by KnowledgeRepository.
+                # In a production app, run this in a threadpool to avoid blocking the event loop.
                 response = genai.embed_content(
                     model="models/text-embedding-004",
                     content=text
@@ -58,13 +61,13 @@ class EmbeddingService:
         # No Gemini key → fallback embedding
         return self._fallback_vector(text)
 
-    def embed_batch(self, texts: List[str]) -> List[np.ndarray]:
+    async def embed_batch(self, texts: List[str]) -> List[np.ndarray]:
         """
         Embed a batch of texts.
         """
         vectors = []
         for t in texts:
-            vectors.append(self.embed_text(t))
+            vectors.append(await self.embed_text(t))
         return vectors
 
     def _fallback_vector(self, text: str) -> np.ndarray:

@@ -1,0 +1,7 @@
+[
+  {
+    "doc_id": "test-doc-123",
+    "text": "This is a legal contract for testing purposes.",
+    "vector_index": 0
+  }
+]
