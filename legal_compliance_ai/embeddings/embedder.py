@@ -13,7 +13,7 @@ class Embedder:
     """
 
     def __init__(self, model_name: str = "models/embedding-001", dimension: int = 768):
-        api_key = os.getenv("AIzaSyBzyf2zMEQ_kq8N0w2mF7yfnraX45oDtiw")
+        api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             genai.configure(api_key=api_key)
             self.model = model_name

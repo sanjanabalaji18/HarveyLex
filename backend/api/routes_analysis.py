@@ -10,7 +10,7 @@ from backend.core.logger import get_logger
 
 # Configure the Gemini API key
 # Make sure to set the GOOGLE_API_KEY environment variable
-genai.configure(api_key=os.environ.get("AIzaSyBzyf2zMEQ_kq8N0w2mF7yfnraX45oDtiw"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 router = APIRouter()
 knowledge_repo = KnowledgeRepository()

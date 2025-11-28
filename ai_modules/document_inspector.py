@@ -13,7 +13,7 @@ class DocumentInspector:
     """
 
     def __init__(self):
-        api_key = os.getenv("AIzaSyBzyf2zMEQ_kq8N0w2mF7yfnraX45oDtiw")
+        api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             genai.configure(api_key=api_key)
             self.model = genai.GenerativeModel("gemini-2.0-pro")

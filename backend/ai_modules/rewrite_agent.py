@@ -3,7 +3,7 @@ import google.generativeai as genai
 
 class RewriteAgent:
     def __init__(self):
-        genai.configure(api_key=os.getenv("AIzaSyBzyf2zMEQ_kq8N0w2mF7yfnraX45oDtiw"))
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         self.model = genai.GenerativeModel("gemini-pro")
 
     def rewrite_text(self, text: str, objective: str):
