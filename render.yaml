@@ -1,0 +1,30 @@
+services:
+  # Backend Service
+  - type: web
+    name: backend
+    env: docker
+    plan: free
+    dockerContext: .
+    dockerfilePath: backend/Dockerfile
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # Frontend Service
+  - type: web
+    name: frontend
+    env: docker
+    plan: free
+    dockerContext: .
+    dockerfilePath: frontend/app/Dockerfile
+    envVars:
+      - key: PORT
+        value: 80
+    # Link frontend to backend so they can communicate
+    # Note: In Render, you might need to update the Nginx proxy pass to use the full internal URL
+    # if 'http://backend:8000' doesn't resolve. 
+    # But for a simple setup, we'll assume standard Docker networking or public URL usage.
