@@ -137,8 +137,21 @@ async def analyse(req: AnalysisRequest):
             "regulations": results
         }
     else:
-        return {
-            "type": "non-legal",
-            "message": "This document does not appear to be legal. Here is a general summary:",
-            "summary": summary_agent.basic_summary(text)
-        }
+        # Even for non-legal docs, if there's a query, we should answer it
+        if req.query:
+             # Use the same summarizer but maybe with less strict legal context if needed
+             # For now, we reuse the robust summarizer to answer the question
+             results = await finder.search(req.query, k=3)
+             summary = summary_agent.summarize(text, results, query=req.query)
+             return {
+                "type": "non-legal",
+                "message": "Document analysis:",
+                "summary": summary,
+                "regulations": results
+             }
+        else:
+            return {
+                "type": "non-legal",
+                "message": "This document does not appear to be legal. Here is a general summary:",
+                "summary": summary_agent.basic_summary(text)
+            }
