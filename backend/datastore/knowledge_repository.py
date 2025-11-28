@@ -82,14 +82,16 @@ class KnowledgeRepository:
 
     def get_document_text(self, doc_id: str) -> str:
         """Retrieve text for a specific document ID."""
-        if self.vector_store and hasattr(self.vector_store, "get_document_by_id"):
-            doc = self.vector_store.get_document_by_id(doc_id)
-            if doc:
-                return doc.get("text", "")
+        if self.vector_store:
+            if hasattr(self.vector_store, "get_all_text_for_document"):
+                return self.vector_store.get_all_text_for_document(doc_id)
+            elif hasattr(self.vector_store, "get_document_by_id"):
+                doc = self.vector_store.get_document_by_id(doc_id)
+                if doc:
+                    return doc.get("text", "")
         
         # Fallback to internal metadata if used (legacy)
         for item in self.metadata:
             if item.get("doc_id") == doc_id:
                 return item.get("text", "")
-        
         return ""

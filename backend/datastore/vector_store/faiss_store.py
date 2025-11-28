@@ -104,3 +104,11 @@ class FaissStore(VectorStore):
             if item.get("doc_id") == doc_id or item.get("document_id") == doc_id:
                 return item
         return None
+
+    def get_all_text_for_document(self, doc_id: str) -> str:
+        """Retrieve and concatenate all text chunks for a given document ID."""
+        texts = []
+        for item in self.metadata:
+            if item.get("doc_id") == doc_id or item.get("document_id") == doc_id:
+                texts.append(item.get("text", ""))
+        return "\n\n".join(texts)

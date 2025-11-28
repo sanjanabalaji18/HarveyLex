@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from backend.datastore.embedding_utils import EmbeddingService
-from backend.datastore.vector_store.faiss_store import FaissStore
-from backend.datastore.knowledge_repository import KnowledgeRepository
+from datastore.embedding_utils import EmbeddingService
+from datastore.vector_store.faiss_store import FaissStore
+from datastore.knowledge_repository import KnowledgeRepository
 
 router = APIRouter()
 
