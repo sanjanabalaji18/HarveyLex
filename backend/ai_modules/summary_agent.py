@@ -10,47 +10,50 @@ class SummaryAgent:
         api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel("gemini-1.5-flash")
+            self.model_pro = genai.GenerativeModel("gemini-1.5-pro")
+            self.model_flash = genai.GenerativeModel("gemini-1.5-flash")
         else:
-            self.model = None
+            self.model_pro = None
+            self.model_flash = None
 
-    def summarize(self, text: str, context_results: List[Dict[str, Any]]) -> str:
-        if not self.model:
+    def summarize(self, text: str, vector_hits: List[Dict[str, Any]]) -> str:
+        if not self.model_pro:
             return "Summarizer not configured."
 
-        context_str = "\n".join([f"- {item.get('text', '')}" for item in context_results])
-        
+        # Extract text from vector hits
+        context = "\n\n".join([hit.get("text", "") for hit in vector_hits])
+
         prompt = f"""
-        You are a legal assistant. Summarize the following document text, taking into account the relevant regulations provided.
+        You are a legal analysis AI.
+        Use the document and retrieved legal clauses below to perform a true legal analysis.
 
-        Document Text:
-        {text[:5000]}
+        DOCUMENT:
+        {text[:8000]}
 
-        Relevant Regulations:
-        {context_str}
+        RELEVANT CLAUSES:
+        {context}
 
-        Provide a comprehensive summary highlighting compliance status and key legal points.
+        Provide:
+        - Key legal risks
+        - Governing law detection
+        - Compliance issues
+        - Parties & obligations
         """
-        
+
         try:
-            response = self.model.generate_content(prompt)
+            response = self.model_pro.generate_content(prompt)
             return response.text
         except Exception as e:
             return f"Error generating summary: {str(e)}"
 
     def basic_summary(self, text: str) -> str:
-        if not self.model:
+        if not self.model_flash:
             return "Summarizer not configured."
 
-        prompt = f"""
-        Summarize the following text:
-
-        Text:
-        {text[:5000]}
-        """
+        prompt = f"Summarize this non-legal document in 5 points:\n{text[:5000]}"
         
         try:
-            response = self.model.generate_content(prompt)
+            response = self.model_flash.generate_content(prompt)
             return response.text
         except Exception as e:
             return f"Error generating summary: {str(e)}"
