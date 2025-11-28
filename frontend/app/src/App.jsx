@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Scale, 
-  ShieldCheck, 
-  Upload, 
-  FileText, 
-  Search, 
-  Bot, 
-  Zap, 
-  ChevronRight, 
-  Menu, 
-  X, 
-  Send, 
+import {
+  Scale,
+  ShieldCheck,
+  Upload,
+  FileText,
+  Search,
+  Bot,
+  Zap,
+  ChevronRight,
+  Menu,
+  X,
+  Send,
   Loader2,
   CheckCircle2,
   FileCheck,
@@ -23,6 +23,7 @@ import {
   Database,
   ScanLine
 } from 'lucide-react';
+import apiClient, { api } from './api/client';
 
 // --- Mock Data & Constants ---
 
@@ -53,8 +54,8 @@ const INGESTION_STEPS = [
 const Header = ({ onViewChange, currentView }) => (
   <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
     <div className="container mx-auto flex h-16 items-center justify-between px-4">
-      <div 
-        className="flex items-center gap-2 cursor-pointer" 
+      <div
+        className="flex items-center gap-2 cursor-pointer"
         onClick={() => onViewChange('landing')}
       >
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
@@ -62,7 +63,7 @@ const Header = ({ onViewChange, currentView }) => (
         </div>
         <span className="text-xl font-bold tracking-tight text-slate-900">HarveyLex</span>
       </div>
-      
+
       <nav className="hidden md:flex items-center gap-6">
         <button className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Platform</button>
         <button className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Security</button>
@@ -71,7 +72,7 @@ const Header = ({ onViewChange, currentView }) => (
 
       <div className="flex items-center gap-3">
         {currentView === 'landing' ? (
-          <button 
+          <button
             onClick={() => onViewChange('app')}
             className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-slate-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
           >
@@ -95,24 +96,24 @@ const Header = ({ onViewChange, currentView }) => (
 const Hero = ({ onStart }) => (
   <div className="relative overflow-hidden bg-white pt-16 pb-32">
     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-indigo-50/50 rounded-full blur-3xl -z-10" />
-    
+
     <div className="container mx-auto px-4 text-center">
       <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-600 mb-8 animate-fade-in-up">
         <Zap size={14} fill="currentColor" />
         <span>Powered by Multi-Agent Architecture</span>
       </div>
-      
+
       <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl mb-6 leading-tight">
         Legal compliance at the speed of <span className="text-indigo-600">AI reasoning.</span>
       </h1>
-      
+
       <p className="mx-auto max-w-2xl text-lg text-slate-600 mb-10 leading-relaxed">
-        HarveyLex ingests complex legal documents, analyzes regulations, and delivers 
+        HarveyLex ingests complex legal documents, analyzes regulations, and delivers
         instant compliance insights using a secure, multi-agent backend.
       </p>
-      
+
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button 
+        <button
           onClick={onStart}
           className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-xl transition-all hover:bg-indigo-700 hover:translate-y-[-2px]"
         >
@@ -176,8 +177,8 @@ const DocumentSidebar = ({ documents, onUpload, activeDocId, onSelectDoc, isOpen
       ) : (
         <ul className="space-y-1">
           {documents.map((doc) => (
-            <li 
-              key={doc.id} 
+            <li
+              key={doc.id}
               onClick={() => onSelectDoc(doc)}
               className={`
                 flex items-start gap-3 p-3 rounded-lg transition-colors cursor-pointer group
@@ -212,19 +213,19 @@ const IngestionOverlay = ({ currentStepIndex, filename }) => (
     <div className="w-full max-w-md">
       <h3 className="text-xl font-bold text-slate-900 mb-6 text-center">Ingesting Document</h3>
       <p className="text-center text-slate-500 mb-8 font-medium">{filename}</p>
-      
+
       <div className="space-y-6">
         {INGESTION_STEPS.map((step, idx) => {
           const isComplete = idx < currentStepIndex;
           const isCurrent = idx === currentStepIndex;
-          
+
           return (
             <div key={step.id} className={`flex items-center gap-4 transition-all duration-300 ${isCurrent ? 'scale-105' : 'opacity-60'}`}>
               <div className={`
                 w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2
-                ${isComplete ? 'bg-green-100 border-green-500 text-green-600' : 
-                  isCurrent ? 'bg-indigo-50 border-indigo-600 text-indigo-600 animate-pulse' : 
-                  'bg-slate-50 border-slate-200 text-slate-300'}
+                ${isComplete ? 'bg-green-100 border-green-500 text-green-600' :
+                  isCurrent ? 'bg-indigo-50 border-indigo-600 text-indigo-600 animate-pulse' :
+                    'bg-slate-50 border-slate-200 text-slate-300'}
               `}>
                 {isComplete ? <CheckCircle2 size={20} /> : <step.icon size={20} />}
               </div>
@@ -259,9 +260,9 @@ const PDFPreview = ({ docUrl, isIngesting, ingestionStep, filename }) => (
       {isIngesting ? (
         <IngestionOverlay currentStepIndex={ingestionStep} filename={filename} />
       ) : docUrl ? (
-        <iframe 
-          src={docUrl} 
-          className="w-full h-full border-none" 
+        <iframe
+          src={docUrl}
+          className="w-full h-full border-none"
           title="Document Preview"
         />
       ) : (
@@ -306,8 +307,8 @@ const ChatInterface = ({ messages, isProcessing, agentStep, onSend, onSuggestion
         )}
 
         {messages.map((msg) => (
-          <div 
-            key={msg.id} 
+          <div
+            key={msg.id}
             className={`flex gap-3 max-w-3xl ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}
           >
             <div className={`
@@ -316,12 +317,12 @@ const ChatInterface = ({ messages, isProcessing, agentStep, onSend, onSuggestion
             `}>
               {msg.sender === 'user' ? 'JD' : <Bot size={16} />}
             </div>
-            
+
             <div className={`flex flex-col gap-1 min-w-0 max-w-[85%]`}>
               <div className={`
                 p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm
-                ${msg.sender === 'user' 
-                  ? 'bg-indigo-600 text-white rounded-tr-none' 
+                ${msg.sender === 'user'
+                  ? 'bg-indigo-600 text-white rounded-tr-none'
                   : 'bg-slate-50 border border-slate-100 text-slate-800 rounded-tl-none'}
               `}>
                 {msg.text.split('\n').map((line, i) => (
@@ -343,26 +344,26 @@ const ChatInterface = ({ messages, isProcessing, agentStep, onSend, onSuggestion
             </div>
           </div>
         ))}
-        
+
         {isProcessing && (
           <div className="flex gap-4 max-w-3xl mr-auto animate-pulse">
             <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0">
               <Bot size={16} className="text-slate-400" />
             </div>
             <div className="flex flex-col gap-2">
-               <div className="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none w-64 shadow-sm">
-                 <div className="flex items-center gap-3">
-                   <Loader2 size={16} className="text-indigo-600 animate-spin" />
-                   <div className="flex flex-col">
-                     <span className="text-xs font-bold text-indigo-600 uppercase tracking-wide">
-                       {agentStep ? AGENT_STEPS.find(s => s.id === agentStep)?.label : 'System'}
-                     </span>
-                     <span className="text-xs text-slate-500">
-                       {agentStep ? AGENT_STEPS.find(s => s.id === agentStep)?.action : 'Thinking...'}
-                     </span>
-                   </div>
-                 </div>
-               </div>
+              <div className="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none w-64 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <Loader2 size={16} className="text-indigo-600 animate-spin" />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-indigo-600 uppercase tracking-wide">
+                      {agentStep ? AGENT_STEPS.find(s => s.id === agentStep)?.label : 'System'}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      {agentStep ? AGENT_STEPS.find(s => s.id === agentStep)?.action : 'Thinking...'}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -378,7 +379,7 @@ const ChatInterface = ({ messages, isProcessing, agentStep, onSend, onSuggestion
             disabled={!hasDocs}
             id="chat-input"
           />
-          <button 
+          <button
             onClick={() => {
               const input = document.getElementById('chat-input');
               if (input.value) onSend(input.value);
@@ -401,7 +402,7 @@ export default function HarveyLexApp() {
   const [documents, setDocuments] = useState([]);
   const [activeDoc, setActiveDoc] = useState(null);
   const [activeDocUrl, setActiveDocUrl] = useState(null);
-  
+
   // Ingestion State
   const [isIngesting, setIsIngesting] = useState(false);
   const [ingestionStepIndex, setIngestionStepIndex] = useState(0);
@@ -411,7 +412,7 @@ export default function HarveyLexApp() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [agentStep, setAgentStep] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
@@ -420,7 +421,7 @@ export default function HarveyLexApp() {
     }
   }, [messages, isProcessing, agentStep]);
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -428,8 +429,9 @@ export default function HarveyLexApp() {
     const objectUrl = URL.createObjectURL(file);
     setActiveDocUrl(objectUrl);
 
+    const tempId = Date.now();
     const newDoc = {
-      id: Date.now(),
+      id: tempId,
       name: file.name,
       status: 'processing'
     };
@@ -439,74 +441,116 @@ export default function HarveyLexApp() {
     setIsIngesting(true);
     setIngestionStepIndex(0);
 
-    // Simulate Step-by-Step Ingestion
-    let step = 0;
-    const interval = setInterval(() => {
-      step++;
-      setIngestionStepIndex(step);
-      
-      if (step >= INGESTION_STEPS.length) {
-        clearInterval(interval);
-        setIsIngesting(false);
-        setDocuments(prev => prev.map(d => d.id === newDoc.id ? { ...d, status: 'ready' } : d));
-        
-        const systemMsg = {
-          id: Date.now(),
-          sender: 'bot',
-          text: `**Analysis Complete**: ${file.name}\n\nI have successfully extracted text, chunked the content, and updated the vector database. You can now audit this document.`
-        };
-        setMessages(prev => [...prev, systemMsg]);
-      }
-    }, 1200); // 1.2s per step to allow user to see the visualization
+    try {
+      // Simulate steps for UI feedback while uploading
+      const interval = setInterval(() => {
+        setIngestionStepIndex(prev => Math.min(prev + 1, 4));
+      }, 500);
+
+      const response = await api.uploadDocument(file);
+      clearInterval(interval);
+
+      // Update doc with real ID from backend
+      setDocuments(prev => prev.map(d => d.id === tempId ? { ...d, id: response.data.document_id, status: 'ready' } : d));
+      setActiveDoc(prev => prev.id === tempId ? { ...prev, id: response.data.document_id, status: 'ready' } : prev);
+
+      setIsIngesting(false);
+      setIngestionStepIndex(5); // Complete
+
+      const systemMsg = {
+        id: Date.now(),
+        sender: 'bot',
+        text: `**Analysis Complete**: ${file.name}\n\nI have successfully extracted text, chunked the content, and updated the vector database. You can now audit this document.`
+      };
+      setMessages(prev => [...prev, systemMsg]);
+
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setIsIngesting(false);
+      setDocuments(prev => prev.map(d => d.id === tempId ? { ...d, status: 'error' } : d));
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        sender: 'bot',
+        text: `Error uploading document: ${error.message}`
+      }]);
+    }
   };
 
-  const simulateAgentResponse = (query) => {
-    setIsProcessing(true);
-    
-    // Simulate Multi-Agent Workflow
-    const steps = ['extract', 'vector', 'analysis', 'draft'];
-    let currentStepIndex = 0;
-
-    const interval = setInterval(() => {
-      if (currentStepIndex >= steps.length) {
-        clearInterval(interval);
-        setAgentStep(null);
-        setIsProcessing(false);
-        
-        // Response Logic (Mock)
-        let responseText = "";
-        let citations = [];
-
-        if (query.toLowerCase().includes('liability')) {
-          responseText = "Based on **Section 8.2 (Limitation of Liability)**:\n\nThe liability cap is set at **2x the total fees paid** in the preceding 12 months. \n\n• **Exceptions:** This cap does *not* apply to data breaches involving PII or gross negligence.\n• **Compliance Note:** This aligns with standard SaaS benchmarks but verify against your specific risk tolerance for EU markets.";
-          citations = ["8", "12"];
-        } else if (query.toLowerCase().includes('gdpr') || query.toLowerCase().includes('data')) {
-          responseText = "**GDPR Compliance Analysis:**\n\nThe document contains a Data Processing Addendum (DPA) in **Exhibit B**. \n\n• **Process:** Data subjects rights are addressed in Clause 4.1.\n• **Transfer:** Cross-border transfer mechanisms (SCCs) are present.\n• **Flag:** The definition of 'Personal Data' appears slightly narrower than Article 4 of GDPR. I recommend amending this definition for full compliance.";
-          citations = ["24", "25", "Appx A"];
-        } else {
-          responseText = "I've analyzed the document regarding your query. \n\nBased on the text extraction, the relevant clauses indicate standard commercial terms. \n\nHowever, I recommend reviewing **Section 14 (Governing Law)** as it specifies New York law, which may conflict with your preferred jurisdiction.";
-          citations = ["14"];
-        }
-
-        setMessages(prev => [...prev, {
-          id: Date.now(),
-          sender: 'bot',
-          text: responseText,
-          citations: citations
-        }]);
-      } else {
-        setAgentStep(steps[currentStepIndex]);
-        currentStepIndex++;
-      }
-    }, 1000);
-  };
-
-  const handleSend = (text) => {
+  const handleSend = async (text) => {
     const input = document.getElementById('chat-input');
     if (input) input.value = '';
 
-    setMessages(prev => [...prev, { id: Date.now(), sender: 'user', text }]);
-    simulateAgentResponse(text);
+    const userMsgId = Date.now();
+    setMessages(prev => [...prev, { id: userMsgId, sender: 'user', text }]);
+    setIsProcessing(true);
+
+    // Simulate agent steps for UI
+    const steps = ['extract', 'vector', 'analysis', 'draft'];
+    let stepIdx = 0;
+    const stepInterval = setInterval(() => {
+      if (stepIdx < steps.length) {
+        setAgentStep(steps[stepIdx]);
+        stepIdx++;
+      }
+    }, 800);
+
+    try {
+      // Determine which endpoint to use based on context
+      // For now, we use the new /analyse endpoint if a document is active
+      let response;
+      if (activeDoc && activeDoc.status === 'ready') {
+        // Use the new advanced analysis endpoint
+        response = await apiClient.post('/api/analyse', {
+          query: text,
+          session_id: "session-" + Date.now(), // Simple session ID
+          file_id: activeDoc.id
+        });
+      } else {
+        // Fallback to general analysis
+        response = await apiClient.post('/api/analyze', {
+          query: text,
+          session_id: "session-" + Date.now()
+        });
+      }
+
+      clearInterval(stepInterval);
+      setAgentStep(null);
+      setIsProcessing(false);
+
+      const data = response.data;
+      let botText = data.answer || data.summary || "Analysis complete.";
+
+      // Format the response if it's from the new endpoint
+      if (data.message) {
+        botText = `**${data.message}**\n\n${data.summary}`;
+      }
+
+      // Extract citations/sources
+      let citations = [];
+      if (data.sources) {
+        citations = data.sources.map((s, i) => i + 1); // Simple index based citations for now
+      } else if (data.regulations) {
+        citations = data.regulations.map((r, i) => i + 1);
+      }
+
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        sender: 'bot',
+        text: botText,
+        citations: citations
+      }]);
+
+    } catch (error) {
+      clearInterval(stepInterval);
+      setAgentStep(null);
+      setIsProcessing(false);
+      console.error("Analysis failed:", error);
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        sender: 'bot',
+        text: `Error analyzing query: ${error.message}. Please ensure the backend is running and the document is fully processed.`
+      }]);
+    }
   };
 
   return (
@@ -518,11 +562,11 @@ export default function HarveyLexApp() {
       ) : (
         <div className="flex h-[calc(100vh-64px)] overflow-hidden">
           {/* Sidebar */}
-          <DocumentSidebar 
-            documents={documents} 
+          <DocumentSidebar
+            documents={documents}
             activeDocId={activeDoc?.id}
             onSelectDoc={(doc) => setActiveDoc(doc)}
-            onUpload={handleFileUpload} 
+            onUpload={handleFileUpload}
             isOpen={isSidebarOpen}
             onClose={() => setIsSidebarOpen(false)}
           />
@@ -531,15 +575,15 @@ export default function HarveyLexApp() {
           <main className="flex-1 flex w-full relative">
             {/* Left: Chat */}
             <div className={`flex-1 flex flex-col min-w-0 transition-all ${activeDoc ? 'w-1/2 border-r border-slate-200' : 'w-full'}`}>
-              <button 
+              <button
                 className="lg:hidden absolute top-4 right-4 z-50 p-2 bg-slate-900 text-white rounded-full shadow-lg"
                 onClick={() => setIsSidebarOpen(true)}
               >
                 <Menu size={20} />
               </button>
-              
-              <ChatInterface 
-                messages={messages} 
+
+              <ChatInterface
+                messages={messages}
                 isProcessing={isProcessing}
                 agentStep={agentStep}
                 onSend={handleSend}
@@ -552,9 +596,9 @@ export default function HarveyLexApp() {
             {/* Right: PDF Preview (Only visible if doc active) */}
             {activeDoc && (
               <div className="hidden lg:block w-1/2 h-full bg-slate-100">
-                <PDFPreview 
-                  docUrl={activeDocUrl} 
-                  isIngesting={isIngesting} 
+                <PDFPreview
+                  docUrl={activeDocUrl}
+                  isIngesting={isIngesting}
                   ingestionStep={ingestionStepIndex}
                   filename={activeDoc?.name}
                 />
