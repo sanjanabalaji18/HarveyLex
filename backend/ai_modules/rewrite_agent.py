@@ -1,4 +1,5 @@
 import os
+from core.logger import get_logger
 import google.generativeai as genai
 
 class RewriteAgent:

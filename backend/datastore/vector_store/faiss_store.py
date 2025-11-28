@@ -4,6 +4,9 @@ from typing import List, Dict, Any, Optional
 
 import numpy as np
 
+from datastore.vector_store.vector_store import VectorStore
+from core.logger import get_logger
+
 try:
     import faiss
 except Exception:

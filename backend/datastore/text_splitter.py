@@ -1,5 +1,5 @@
 from typing import List
-from backend.core.logger import get_logger
+from core.logger import get_logger
 
 
 

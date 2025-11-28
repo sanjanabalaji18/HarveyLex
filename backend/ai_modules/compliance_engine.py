@@ -1,8 +1,8 @@
 import google.generativeai as genai
-from backend.datastore.knowledge_repository import KnowledgeRepository
+from datastore.knowledge_repository import KnowledgeRepository
 
-from backend.ai_modules.reasoning_unit import ReasoningUnit
-from backend.ai_modules.document_inspector import DocumentInspector
+from ai_modules.reasoning_unit import ReasoningUnit
+from ai_modules.document_inspector import DocumentInspector
 
 import os
 from dotenv import load_dotenv

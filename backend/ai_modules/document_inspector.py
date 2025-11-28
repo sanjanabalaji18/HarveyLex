@@ -1,6 +1,6 @@
 import google.generativeai as genai
 import os
-from backend.datastore.pdf_reader import PDFReader
+from datastore.pdf_reader import PDFReader
 
 
 class DocumentInspector:
