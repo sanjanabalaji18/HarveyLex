@@ -129,7 +129,7 @@ async def analyse(req: AnalysisRequest):
     if "legal" in doc_type.lower():
         # Use the query from request to find regulations
         results = await finder.search(req.query, k=5)
-        summary = summary_agent.summarize(text, results)
+        summary = summary_agent.summarize(text, results, query=req.query)
         return {
             "type": doc_type,
             "message": "Legal document detected. Compliance analysis:",
