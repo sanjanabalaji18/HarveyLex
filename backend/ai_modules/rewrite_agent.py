@@ -7,25 +7,35 @@ class RewriteAgent:
         genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         self.model = genai.GenerativeModel("gemini-pro")
 
-    def rewrite_text(self, text: str, objective: str):
+    async def rewrite(self, clause: str, issue: str, context: str, reference_text: str = ""):
         """
-        Rewrites legal/contract text based on the provided objective.
-        For example:
-        - simplify
-        - formalize
-        - make legally compliant
-        - summarize
+        Rewrites a legal clause to address a specific issue.
         """
         prompt = f"""
-You are a legal rewriting assistant.
+        You are a senior legal drafter.
+        Rewrite the following clause to address the issue described.
+        
+        CONTEXT:
+        {context}
 
-Objective: {objective}
+        ORIGINAL CLAUSE:
+        {clause}
 
-Rewrite the following text accordingly. Preserve meaning and accuracy.
+        ISSUE TO FIX:
+        {issue}
 
-Text:
-{text}
-"""
+        REFERENCE / PRECEDENT (Optional):
+        {reference_text}
 
-        response = self.model.generate_content(prompt)
-        return response.text
+        Provide 3 distinct options for the rewrite:
+        1. Conservative (Minimal change)
+        2. Balanced (Standard market practice)
+        3. Aggressive (Strongly favoring the party)
+        """
+
+        try:
+            response = await self.model.generate_content_async(prompt)
+            return response.text
+        except Exception as e:
+            get_logger(__name__).error(f"Rewrite failed: {e}")
+            return "Error generating rewrite."
