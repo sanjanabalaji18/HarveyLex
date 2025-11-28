@@ -63,12 +63,12 @@ class EmbeddingService:
 
     async def embed_batch(self, texts: List[str]) -> List[np.ndarray]:
         """
-        Embed a batch of texts.
+        Embed a batch of texts in parallel.
         """
-        vectors = []
-        for t in texts:
-            vectors.append(await self.embed_text(t))
-        return vectors
+        import asyncio
+        tasks = [self.embed_text(t) for t in texts]
+        vectors = await asyncio.gather(*tasks)
+        return list(vectors)
 
     def _fallback_vector(self, text: str) -> np.ndarray:
         """
