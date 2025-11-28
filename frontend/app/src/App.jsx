@@ -500,14 +500,14 @@ export default function HarveyLexApp() {
       let response;
       if (activeDoc && activeDoc.status === 'ready') {
         // Use the new advanced analysis endpoint
-        response = await apiClient.post('/api/analyse', {
+        response = await apiClient.post('/analyse', {
           query: text,
           session_id: "session-" + Date.now(), // Simple session ID
           file_id: activeDoc.id
         });
       } else {
         // Fallback to general analysis
-        response = await apiClient.post('/api/analyze', {
+        response = await apiClient.post('/analyze', {
           query: text,
           session_id: "session-" + Date.now()
         });

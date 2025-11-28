@@ -38,9 +38,10 @@ export const api = {
    * @returns {Promise<any>} The analysis results.
    */
   analyzeDocument: (documentId, query) => {
-    return apiClient.post('/analysis/analyze-document/', {
-      document_id: documentId,
+    return apiClient.post('/analyse', {
+      file_id: documentId,
       query: query,
+      session_id: "session-" + Date.now()
     });
   },
 
