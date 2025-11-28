@@ -8,6 +8,11 @@ from backend.core.memory import memory_service
 
 from backend.core.logger import get_logger
 
+from typing import Optional
+from backend.ai_modules.document_classifier import DocumentClassifier
+from backend.ai_modules.regulation_finder import RegulationFinder
+from backend.ai_modules.summary_agent import SummaryAgent
+
 # Configure the Gemini API key
 # Make sure to set the GOOGLE_API_KEY environment variable
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -16,10 +21,16 @@ router = APIRouter()
 knowledge_repo = KnowledgeRepository()
 logger = get_logger(__name__)
 
+# Instantiate AI Agents
+classifier = DocumentClassifier()
+finder = RegulationFinder()
+summary_agent = SummaryAgent()
+
 # --- Pydantic Models ---
 class AnalysisRequest(BaseModel):
     query: str
     session_id: str  # Added to track conversation
+    file_id: Optional[str] = None
 
 class AnalysisResponse(BaseModel):
     answer: str
@@ -98,5 +109,36 @@ async def analyze_documents(request: AnalysisRequest):
 
     return AnalysisResponse(
         answer=answer,
-        sources=[{"doc_id": doc["doc_id"], "text": doc["text"]} for doc in context_docs]
+        sources=[{"doc_id": doc.get("doc_id", "unknown"), "text": doc.get("text", "")} for doc in context_docs]
     )
+
+@router.post("/analyse")
+async def analyse(req: AnalysisRequest):
+    """
+    Advanced analysis endpoint using document classification and regulation finding.
+    """
+    if not req.file_id:
+        raise HTTPException(status_code=400, detail="file_id is required for this endpoint")
+
+    text = knowledge_repo.get_document_text(req.file_id)
+    if not text:
+        raise HTTPException(status_code=404, detail="Document text not found")
+
+    doc_type = classifier.classify_document(text)
+
+    if "legal" in doc_type.lower():
+        # Use the query from request to find regulations
+        results = await finder.search(req.query, k=5)
+        summary = summary_agent.summarize(text, results)
+        return {
+            "type": doc_type,
+            "message": "Legal document detected. Compliance analysis:",
+            "summary": summary,
+            "regulations": results
+        }
+    else:
+        return {
+            "type": "non-legal",
+            "message": "This document does not appear to be legal. Here is a general summary:",
+            "summary": summary_agent.basic_summary(text)
+        }

@@ -93,3 +93,14 @@ class KnowledgeRepository:
 
         logger.info(f"Found {len(results)} results for query: '{query}'")
         return results
+
+    def get_document_text(self, doc_id: str) -> str:
+        """Retrieve text for a specific document ID."""
+        # Check internal metadata
+        for item in self.metadata:
+            if item.get("doc_id") == doc_id:
+                return item.get("text", "")
+        
+        # If using external vector store, it might not support direct retrieval by ID easily
+        # without a specific method. For now, we rely on internal metadata or return empty.
+        return ""
