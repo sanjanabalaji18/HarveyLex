@@ -41,7 +41,9 @@ async def upload_document(file: UploadFile):
 
         # 1. Extract text content from the document
         # This reader needs to handle different file types (pdf, docx, etc.)
-        text = reader.extract(file_path, file.content_type)
+        with open(file_path, "rb") as f:
+            file_bytes = f.read()
+        text = reader.extract(file_bytes, file.content_type)
         if not text or not text.strip():
             raise HTTPException(status_code=400, detail="Could not extract text from document.")
 
