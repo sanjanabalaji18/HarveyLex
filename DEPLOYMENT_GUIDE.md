@@ -28,15 +28,12 @@ git push -u origin main
 2.  Click **New +** and select **Blueprint**.
 3.  Connect your GitHub account and select the `harvey-lex` repository.
 4.  Render will automatically detect the `render.yaml` file.
-5.  Click **Apply**.
+5.  **Crucial Step:** You will see a section called **"Environment Variables"** or **"Env Vars"** on the setup screen.
+6.  It will ask for `GEMINI_API_KEY`.
+7.  Paste your new API key there.
+8.  Click **Apply** or **Create New Blueprint**.
 
-## Step 3: Configure Environment Variables
-Render will detect that `GEMINI_API_KEY` is needed.
-1.  In the Render Dashboard, go to your **Backend** service.
-2.  Click **Environment**.
-3.  Add `GEMINI_API_KEY` and paste your actual API key (from `.env`).
-
-## Step 4: Success!
+## Step 3: Success!
 Render will start building your Docker containers. This might take a few minutes.
 Once finished, you will see a URL for your frontend (e.g., `https://harvey-lex-frontend.onrender.com`).
 
