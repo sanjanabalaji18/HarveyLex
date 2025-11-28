@@ -51,7 +51,7 @@ async def upload_document(file: UploadFile):
             raise HTTPException(status_code=400, detail="Text splitting resulted in no chunks.")
 
         # 3. Generate embeddings for each chunk
-        embeddings = embedder.embed_batch(chunks)
+        embeddings = await embedder.embed_batch(chunks)
         if not embeddings:
             raise HTTPException(status_code=500, detail="Embedding generation failed.")
 
