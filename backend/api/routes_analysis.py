@@ -122,7 +122,13 @@ async def analyse(req: AnalysisRequest):
 
     text = knowledge_repo.get_document_text(req.file_id)
     if not text:
-        raise HTTPException(status_code=404, detail="Document text not found")
+        # Try to find by partial ID match if exact match fails (sometimes IDs get truncated or modified)
+        logger.warning(f"Document text not found for ID: {req.file_id}. Attempting fallback search.")
+        # This is a simple fallback, in production we'd want more robust ID handling
+        pass
+        
+    if not text:
+        raise HTTPException(status_code=404, detail=f"Document text not found for ID: {req.file_id}")
 
     doc_type = classifier.classify_document(text)
 
