@@ -3,9 +3,9 @@ import faiss
 import os
 from typing import Optional
 
-from backend.datastore.embedding_utils import EmbeddingService
-from backend.core.logger import get_logger
-from backend.datastore.vector_store.vector_store import VectorStore
+from datastore.embedding_utils import EmbeddingService
+from core.logger import get_logger
+from datastore.vector_store.vector_store import VectorStore
 
 
 logger = get_logger(__name__)
@@ -24,7 +24,7 @@ class KnowledgeRepository:
         
         # Default to the persistent FaissStore if no store is provided
         if vector_store is None:
-            from backend.datastore.vector_store.faiss_store import FaissStore
+            from datastore.vector_store.faiss_store import FaissStore
             self.vector_store = FaissStore()
         else:
             self.vector_store = vector_store

@@ -3,15 +3,15 @@ from pydantic import BaseModel
 import google.generativeai as genai
 import os
 
-from backend.datastore.knowledge_repository import KnowledgeRepository
-from backend.core.memory import memory_service
+from datastore.knowledge_repository import KnowledgeRepository
+from core.memory import memory_service
 
-from backend.core.logger import get_logger
+from core.logger import get_logger
 
 from typing import Optional
-from backend.ai_modules.document_classifier import DocumentClassifier
-from backend.ai_modules.regulation_finder import RegulationFinder
-from backend.ai_modules.summary_agent import SummaryAgent
+from ai_modules.document_classifier import DocumentClassifier
+from ai_modules.regulation_finder import RegulationFinder
+from ai_modules.summary_agent import SummaryAgent
 
 # Configure the Gemini API key
 # Make sure to set the GOOGLE_API_KEY environment variable

@@ -2,7 +2,7 @@ import os
 import numpy as np
 from typing import List
 from dotenv import load_dotenv
-from backend.core.logger import get_logger
+from core.logger import get_logger
 
 # Load .env if present
 load_dotenv()

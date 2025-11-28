@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.api.routes_ingestion import router as ingestion_router
-from backend.api.routes_analysis import router as analysis_router
-from backend.api.routes_drafting import router as drafting_router
-from backend.api.routes_health import router as health_router
+from api.routes_ingestion import router as ingestion_router
+from api.routes_analysis import router as analysis_router
+from api.routes_drafting import router as drafting_router
+from api.routes_health import router as health_router
 
 
 

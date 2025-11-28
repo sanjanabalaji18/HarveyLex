@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from backend.ai_modules.rewrite_agent import RewriteAgent
-from backend.ai_modules.regulation_finder import RegulationFinder
+from ai_modules.rewrite_agent import RewriteAgent
+from ai_modules.regulation_finder import RegulationFinder
 
-from backend.datastore.embedding_utils import EmbeddingService
+from datastore.embedding_utils import EmbeddingService
 
 router = APIRouter()
 

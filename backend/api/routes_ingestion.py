@@ -1,12 +1,12 @@
 from fastapi import APIRouter, UploadFile, HTTPException
-from backend.datastore.pdf_reader import PDFReader
+from datastore.pdf_reader import PDFReader
 # Use the FAISS-backed concrete vector store implementation
-from backend.datastore.vector_store.faiss_store import FaissStore as FaissVectorStore
+from datastore.vector_store.faiss_store import FaissStore as FaissVectorStore
 
-from backend.datastore.text_splitter import TextSplitter
-from backend.datastore.embedding_utils import EmbeddingService
+from datastore.text_splitter import TextSplitter
+from datastore.embedding_utils import EmbeddingService
 
-from backend.datastore.knowledge_repository import KnowledgeRepository
+from datastore.knowledge_repository import KnowledgeRepository
 import uuid
 import os
 
