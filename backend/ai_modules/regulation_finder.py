@@ -51,7 +51,7 @@ class RegulationFinder:
         embedding = await self.encode_query(query)
 
         # Step 2: Perform vector search
-        results = await self.vector_store.search(embedding, k)
+        results = await self.vector_store.search_async(embedding, k)
 
         # Step 3: Format results
         return [

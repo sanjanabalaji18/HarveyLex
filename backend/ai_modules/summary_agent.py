@@ -10,7 +10,7 @@ class SummaryAgent:
         api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             genai.configure(api_key=api_key)
-            self.model_pro = genai.GenerativeModel("gemini-1.5-pro")
+            self.model_pro = genai.GenerativeModel("gemini-1.5-flash")
             self.model_flash = genai.GenerativeModel("gemini-1.5-flash")
         else:
             self.model_pro = None

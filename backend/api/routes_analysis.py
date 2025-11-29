@@ -39,7 +39,11 @@ async def list_documents():
 
 # Instantiate AI Agents
 classifier = DocumentClassifier()
-finder = RegulationFinder()
+# Use the shared vector store from knowledge_repo
+finder = RegulationFinder(
+    index_path=knowledge_repo.vector_store.index_file,
+    store_path=knowledge_repo.vector_store.metadata_file
+)
 summary_agent = SummaryAgent()
 
 # --- Pydantic Models ---
@@ -154,6 +158,10 @@ async def analyse(req: AnalysisRequest):
     # Reload the vector store to pick up newly uploaded documents
     if hasattr(knowledge_repo.vector_store, 'load'):
         knowledge_repo.vector_store.load()
+    
+    # Also reload the regulation finder's vector store
+    if hasattr(finder.vector_store, 'load'):
+        finder.vector_store.load()
     
     text = knowledge_repo.get_document_text(req.file_id)
     
