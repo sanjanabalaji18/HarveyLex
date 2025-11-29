@@ -19,8 +19,8 @@ services:
     name: frontend
     env: docker
     plan: free
-    dockerContext: .
-    dockerfilePath: frontend/app/Dockerfile
+    dockerContext: frontend/app
+    dockerfilePath: Dockerfile
     envVars:
       - key: PORT
         value: 80

@@ -43,6 +43,16 @@ If you prefer to set up the Backend manually:
 6.  **Dockerfile Path**: `Dockerfile` (Default).
 7.  Add Environment Variable: `GEMINI_API_KEY`.
 
+### Option C: Manual Setup (Frontend)
+If you need to set up the Frontend manually:
+1.  Create a new **Web Service**.
+2.  Connect your repo.
+3.  **Runtime**: Docker.
+4.  **Root Directory**: `frontend/app` (This is critical!).
+5.  **Build Context**: `.` (Default, relative to Root Directory).
+6.  **Dockerfile Path**: `Dockerfile` (Default).
+7.  Add Environment Variable: `VITE_API_URL` -> `https://<YOUR_BACKEND_URL>.onrender.com`.
+
 ## Step 3: Success!
 Render will start building your Docker containers. This might take a few minutes.
 Once finished, you will see a URL for your frontend (e.g., `https://harvey-lex-frontend.onrender.com`).
