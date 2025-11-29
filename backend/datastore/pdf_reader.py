@@ -35,6 +35,8 @@ class PDFReader:
 
             for page in reader.pages:
                 extracted = page.extract_text() or ""
+                # Remove null bytes that some PDFs have
+                extracted = extracted.replace('\x00', '')
                 pages.append(extracted)
 
             return "\n".join(pages)

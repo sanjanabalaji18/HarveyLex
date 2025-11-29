@@ -130,18 +130,29 @@ async def analyse(req: AnalysisRequest):
     """
     Advanced analysis endpoint using document classification and regulation finding.
     """
+    logger.info(f"Analyse request for file_id: {req.file_id}")
+    
     if not req.file_id:
         raise HTTPException(status_code=400, detail="file_id is required for this endpoint")
 
     text = knowledge_repo.get_document_text(req.file_id)
+    
+    # Debug logging
     if not text:
-        # Try to find by partial ID match if exact match fails (sometimes IDs get truncated or modified)
-        logger.warning(f"Document text not found for ID: {req.file_id}. Attempting fallback search.")
-        # This is a simple fallback, in production we'd want more robust ID handling
-        pass
+        # Check what documents are actually in the store
+        if hasattr(knowledge_repo.vector_store, 'metadata'):
+            stored_ids = set()
+            for item in knowledge_repo.vector_store.metadata:
+                doc_id = item.get("doc_id") or item.get("document_id")
+                if doc_id:
+                    stored_ids.add(doc_id)
+            logger.error(f"Document text not found for ID: {req.file_id}. Available IDs in store: {stored_ids}")
+        else:
+            logger.error(f"Document text not found for ID: {req.file_id}. Vector store has no metadata.")
         
-    if not text:
-        raise HTTPException(status_code=404, detail=f"Document text not found for ID: {req.file_id}")
+        raise HTTPException(status_code=404, detail=f"Document text not found for ID: {req.file_id}. The document may not have been fully processed.")
+    
+    logger.info(f"Successfully retrieved text for document {req.file_id}, length: {len(text)}")
 
     doc_type = classifier.classify_document(text)
 
