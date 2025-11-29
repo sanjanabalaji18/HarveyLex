@@ -24,14 +24,24 @@ git push -u origin main
 
 ## Step 2: Deploy on Render
 
+### Option A: Using Blueprint (Recommended)
 1.  Go to your **Render Dashboard**.
 2.  Click **New +** and select **Blueprint**.
 3.  Connect your GitHub account and select the `harvey-lex` repository.
 4.  Render will automatically detect the `render.yaml` file.
-5.  **Crucial Step:** You will see a section called **"Environment Variables"** or **"Env Vars"** on the setup screen.
-6.  It will ask for `GEMINI_API_KEY`.
-7.  Paste your new API key there.
-8.  Click **Apply** or **Create New Blueprint**.
+    *   *Note: We have configured `render.yaml` to build the backend from the `backend/` directory.*
+5.  **Environment Variables**: You will be prompted for `GEMINI_API_KEY`. Paste your API key here.
+6.  Click **Apply** or **Create New Blueprint**.
+
+### Option B: Manual Setup (Web Service)
+If you prefer to set up the Backend manually:
+1.  Create a new **Web Service**.
+2.  Connect your repo.
+3.  **Runtime**: Docker.
+4.  **Root Directory**: `backend` (This is critical!).
+5.  **Build Context**: `.` (Default, relative to Root Directory).
+6.  **Dockerfile Path**: `Dockerfile` (Default).
+7.  Add Environment Variable: `GEMINI_API_KEY`.
 
 ## Step 3: Success!
 Render will start building your Docker containers. This might take a few minutes.
