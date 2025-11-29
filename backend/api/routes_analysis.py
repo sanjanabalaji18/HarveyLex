@@ -21,6 +21,22 @@ router = APIRouter()
 knowledge_repo = KnowledgeRepository()
 logger = get_logger(__name__)
 
+# Debug endpoint
+@router.get("/documents")
+async def list_documents():
+    """List all available document IDs for debugging"""
+    stored_ids = {}
+    if hasattr(knowledge_repo.vector_store, 'metadata'):
+        for item in knowledge_repo.vector_store.metadata:
+            doc_id = item.get("doc_id") or item.get("document_id")
+            if doc_id:
+                stored_ids[doc_id] = {
+                    "filename": item.get("filename", "unknown"),
+                    "has_text": len(item.get("text", "")) > 0,
+                    "text_length": len(item.get("text", ""))
+                }
+    return {"count": len(stored_ids), "documents": stored_ids}
+
 # Instantiate AI Agents
 classifier = DocumentClassifier()
 finder = RegulationFinder()
@@ -135,6 +151,10 @@ async def analyse(req: AnalysisRequest):
     if not req.file_id:
         raise HTTPException(status_code=400, detail="file_id is required for this endpoint")
 
+    # Reload the vector store to pick up newly uploaded documents
+    if hasattr(knowledge_repo.vector_store, 'load'):
+        knowledge_repo.vector_store.load()
+    
     text = knowledge_repo.get_document_text(req.file_id)
     
     # Debug logging
