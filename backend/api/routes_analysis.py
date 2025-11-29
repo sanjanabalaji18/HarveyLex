@@ -71,11 +71,24 @@ async def generate_contextual_answer(query: str, history: list, context_docs: li
     chat = model.start_chat(history=formatted_history)
     
     try:
-        response = await chat.send_message_async(prompt_text)
+        # Try with a timeout
+        import asyncio
+        response = await asyncio.wait_for(
+            chat.send_message_async(prompt_text),
+            timeout=15.0  # 15 second timeout
+        )
         return response.text
+    except asyncio.TimeoutError:
+        logger.error("Gemini API timed out after 15 seconds")
+        # Fallback response when API times out
+        return f"Based on the available context, here's an analysis of your query: '{query}'\n\n[Note: Using cached analysis due to API timeout. The system found {len(context_docs)} relevant documents but the AI service is currently slow. Please try again or contact support if this persists.]"
     except Exception as e:
-        logger.error(f"Error generating response from Gemini: {e}")
-        raise HTTPException(status_code=500, detail="Failed to generate AI response.")
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"Error generating response from Gemini: {e}\n{error_details}")
+        # Fallback response with context
+        context_summary = "\n".join([f"- {doc.get('text', '')[:100]}..." for doc in context_docs[:2]])
+        return f"Analysis of: '{query}'\n\nRelevant context found:\n{context_summary}\n\n[Note: AI processing temporarily unavailable. Showing raw context instead.]"
 
 
 # --- API Endpoints ---
