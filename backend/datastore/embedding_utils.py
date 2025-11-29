@@ -34,10 +34,10 @@ class EmbeddingService:
 
     async def embed_text(self, text: str) -> np.ndarray:
         """
-        Embed a single piece of text.
+        Embed a single piece of text with timeout.
 
         Returns a numpy vector. Falls back to deterministic hashing
-        when no API key is found.
+        when no API key is found or when API fails.
         """
         text = text.strip()
         if not text:
@@ -45,16 +45,26 @@ class EmbeddingService:
 
         if self.engine_ready:
             try:
-                # Note: genai.embed_content is synchronous, but we wrap it in async def
-                # to satisfy the interface expected by KnowledgeRepository.
-                # In a production app, run this in a threadpool to avoid blocking the event loop.
-                response = genai.embed_content(
-                    model="models/text-embedding-004",
-                    content=text
+                import asyncio
+                # Wrap the sync call with timeout
+                def _embed():
+                    response = genai.embed_content(
+                        model="models/text-embedding-004",
+                        content=text
+                    )
+                    return response.get("embedding", [])
+                
+                # Run with 5 second timeout per embedding
+                vec = await asyncio.wait_for(
+                    asyncio.to_thread(_embed),
+                    timeout=5.0
                 )
-                vec = response.get("embedding", [])
                 return np.array(vec, dtype=float)
-            except Exception:
+            except asyncio.TimeoutError:
+                get_logger(__name__).warning(f"Embedding timeout, using fallback for text: {text[:50]}...")
+                return self._fallback_vector(text)
+            except Exception as e:
+                get_logger(__name__).warning(f"Embedding error: {e}, using fallback")
                 # If API fails, fallback kicks in
                 return self._fallback_vector(text)
 
