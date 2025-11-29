@@ -10,12 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 # Copy and install Python requirements
-COPY backend/requirements.txt ./requirements.txt
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend source
-COPY backend/ /app/backend
-WORKDIR /app/backend
+COPY . /app
+WORKDIR /app
 
 EXPOSE 8000
 
