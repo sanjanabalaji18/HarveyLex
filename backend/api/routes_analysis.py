@@ -187,7 +187,7 @@ async def analyse(req: AnalysisRequest):
     if "legal" in doc_type.lower():
         # Use the query from request to find regulations
         results = await finder.search(req.query, k=5)
-        summary = summary_agent.summarize(text, results, query=req.query)
+        summary = await summary_agent.summarize(text, results, query=req.query)
         return {
             "type": doc_type,
             "message": "Legal document detected. Compliance analysis:",
@@ -200,7 +200,7 @@ async def analyse(req: AnalysisRequest):
              # Use the same summarizer but maybe with less strict legal context if needed
              # For now, we reuse the robust summarizer to answer the question
              results = await finder.search(req.query, k=3)
-             summary = summary_agent.summarize(text, results, query=req.query)
+             summary = await summary_agent.summarize(text, results, query=req.query)
              return {
                 "type": "non-legal",
                 "message": "Document analysis:",
@@ -211,5 +211,5 @@ async def analyse(req: AnalysisRequest):
             return {
                 "type": "non-legal",
                 "message": "This document does not appear to be legal. Here is a general summary:",
-                "summary": summary_agent.basic_summary(text)
+                "summary": await summary_agent.basic_summary(text)
             }

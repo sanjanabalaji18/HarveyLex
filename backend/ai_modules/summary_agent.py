@@ -16,7 +16,7 @@ class SummaryAgent:
             self.model_pro = None
             self.model_flash = None
 
-    def summarize(self, text: str, vector_hits: List[Dict[str, Any]], query: str = None) -> str:
+    async def summarize(self, text: str, vector_hits: List[Dict[str, Any]], query: str = None) -> str:
         if not self.model_pro:
             return "Summarizer not configured."
 
@@ -58,19 +58,19 @@ class SummaryAgent:
             """
 
         try:
-            response = self.model_pro.generate_content(prompt)
+            response = await self.model_pro.generate_content_async(prompt)
             return response.text
         except Exception as e:
             return f"Error generating summary: {str(e)}"
 
-    def basic_summary(self, text: str) -> str:
+    async def basic_summary(self, text: str) -> str:
         if not self.model_flash:
             return "Summarizer not configured."
 
         prompt = f"Summarize this non-legal document in 5 points:\n{text[:5000]}"
         
         try:
-            response = self.model_flash.generate_content(prompt)
+            response = await self.model_flash.generate_content_async(prompt)
             return response.text
         except Exception as e:
             return f"Error generating summary: {str(e)}"
