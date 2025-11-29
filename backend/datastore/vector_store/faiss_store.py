@@ -85,12 +85,17 @@ class FaissStore(VectorStore):
         if not documents:
             return
         vectors = [d["embedding"] for d in documents]
-        metadata = [d.get("metadata", {}) for d in documents]
-        # Ensure metadata contains the text if it's not already there but is in the document
-        for i, doc in enumerate(documents):
-            if "text" in doc and "text" not in metadata[i]:
-                metadata[i]["text"] = doc["text"]
-                
+        metadata = []
+        
+        # Properly merge metadata - flatten the structure
+        for doc in documents:
+            # Start with the nested metadata
+            meta = dict(doc.get("metadata", {}))
+            # Add text to the same level as document_id
+            if "text" in doc:
+                meta["text"] = doc["text"]
+            metadata.append(meta)
+            
         vectors_np = np.array(vectors, dtype=np.float32)
         self.add(vectors_np, metadata)
 
